@@ -104,12 +104,39 @@ XML;
     }
 
 
+    protected function getSingleNotam($code){
+        $credentials = $this->getCredentialsXML();
+        $requestXml = <<< XML
+<?xml version="1.0" encoding="UTF-8" ?>
+            <REQNOTAM>
+            $credentials
+            <ICAO>$code</ICAO>
+            </REQNOTAM>
+XML;
+        $rawResponse = $this->getClient()->getNotam($requestXml);
+        $this->checkError($rawResponse);
 
-    
+        return $this->parseNotamResponse($rawResponse);
+    }
+
+    /**
+     * @param $codes
+     * @return Notam[][]
+     * @throws RocketRouteException
+     */
     public function getNotam($codes){
         if (! is_array($codes)){
             $codes = [$codes];
         }
+
+        // workaround over bulk bug
+        $result = [];
+        foreach ($codes as$code){
+            $result = array_merge($result, $this->getSingleNotam($code));
+        }
+        return $result;
+
+        /*
         $credentials = $this->getCredentialsXML();
         $codesXML = implode(
             "\n",
@@ -127,21 +154,24 @@ XML;
         $rawResponse = $this->getClient()->getNotam($requestXml);
         $this->checkError($rawResponse);
 
-        return $this->parseNotamResponse($rawResponse);
+        return $this->parseNotamResponse($rawResponse);*/
     }
     
     
     protected function parseNotamResponse($rawRequest){
+        $response = [];
         $xml = simplexml_load_string($rawRequest);
 
         if ($xml->NOTAMSET){
-            $icao = $xml->NOTAMSET->{'@ICAO'};
-            print_r($icao);
+            $icao = (string) $xml->NOTAMSET['ICAO'];
+//            print_r($icao);
 
             foreach ($xml->NOTAMSET->NOTAM as $notam){
-                print_r($notam);
+                $response[$icao][] = new Notam($notam);
             }
         }
+        
+        return $response;
 
     }
 
