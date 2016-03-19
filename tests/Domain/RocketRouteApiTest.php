@@ -48,7 +48,8 @@ class RocketRouteApiTest extends \PHPUnit_Framework_TestCase
     function testManyCodes(){
         $api = new RocketRouteApi();
         $response = $api->getNotam(['EGKA' , 'EGHH']);
-        print_r($response);
+        
+        $this->assertEquals(2, count($response));
     }
 
 }

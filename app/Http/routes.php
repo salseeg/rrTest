@@ -11,6 +11,10 @@
 |
 */
 
-$app->get('/', function () use ($app) {
-    return $app->version();
-});
+//$app->get('/', function () use ($app) {
+//    return $app->version();
+//});
+
+
+$app->get('/', 'MapController@index');
+$app->post('/', 'MapController@getNotams');
