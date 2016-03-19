@@ -25,4 +25,15 @@ class GeoSpotTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    function testWithoutRadius(){
+        $spot  = new GeoSpot('5129N00028W');
+
+        $this->assertAttributeEquals('5129N00028W', 'rawString', $spot);
+
+//        $this->assertEquals(5 * 1855.3248, $spot->radius);
+        $this->assertEquals(51 + 29/60.0, $spot->latitude);
+        $this->assertEquals(-28/60.0, $spot->longitude);
+
+    }
+
 }

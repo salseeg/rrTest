@@ -31,7 +31,7 @@ class GeoSpot
 
     protected function initStructure(){
         if (preg_match('/^(?<latitude>\d{4}[NS])(?<longitude>\d{5}[EW])(?<radius>\d+)?$/', $this->rawString, $match)){
-            if ($match['radius']){
+            if (array_key_exists('radius', $match) and $match['radius']){
                 $this->radius = intval($match['radius']) * 1855.3248;
             }
 
