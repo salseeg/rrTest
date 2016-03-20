@@ -72,4 +72,10 @@ class GeoSpot
         return $number;
     }
 
+    function __toString()
+    {
+        return $this->rawString;
+    }
+
+
 }

@@ -34,10 +34,13 @@ class MapController extends Controller
                 $notams = $api->getNotam($codes);
                 foreach ($notams  as  $icao => & $list){
                     foreach ($list as & $notam){
+                        $spot = $notam->getGeoSpot();
+                        $message = $notam->getMessage();
                         $notam = [
                             'id' => $notam->id,
-                            'geoSpot' => $notam->getGeoSpot(),
-                            'message' => $notam->getMessage(),
+                            'coords' => (string) $spot,
+                            'geoSpot' => $spot,
+                            'message' => $message,
                         ];
                     }
                 }
