@@ -88,11 +88,23 @@ EGMC
 
             var renderMarkers = function(){
                 var bounding = new google.maps.LatLngBounds();
+                var icon = {
+                    url: '/exclamation-icon.png',
+                    size: new google.maps.Size(32, 28),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(15, 20)
+                };
+                var shape = {
+                    coords: [1, 28, 15, 0, 31, 28],
+                    type: 'poly'
+                };
 
                 var makeMarker = function(point){
                     return new google.maps.Marker({
                         position: point,
-                        icon:'exclamation-icon.png'
+//                        icon:'exclamation-icon.png'
+                        icon: icon,
+                        shape: shape
                     });
                 };
                 var makeCircle = function(point, radius){
@@ -125,7 +137,7 @@ EGMC
                     marker.setMap(gMap);
 
                     google.maps.event.addListener(marker, 'click', function() {
-                        makeInfo(point, content).open(gMap, marker);
+                        makeInfo(point, content).open(gMap);
                     });
                 });
                 gMap.fitBounds(bounding);
