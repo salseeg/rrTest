@@ -94,7 +94,7 @@ EGMC
                         strokeOpacity: 0.8,
                         strokeWeight: 1.5,
                         fillColor: "#ff0",
-                        fillOpacity: 0.5
+                        fillOpacity: 0.45
                     });
                 };
                 var makeInfo = function(point, content){
