@@ -6,7 +6,7 @@
     <style>
         #mapPane{
             display: inline-block;
-            width: 70%;
+            width: 80%;
             height: 90%;
             border: 1px solid black;
             min-width: 500px;
@@ -19,14 +19,24 @@
             text-align: center;
         }
         #panel textarea {
-            width:100%;
-            height: 300px;
+            display: block;
+            width: 100%;
+            height: 15em;
             padding: 0.7ex;
             text-align: left;
         }
 
         #panel button {
             margin: 1em;
+        }
+
+        @media (max-width: 1024px) {
+            #mapPane {
+                width: 100%;
+            }
+            #panel {
+                margin-top: 1ex;
+            }
         }
 
     </style>
@@ -42,7 +52,6 @@ EGKA
 EGMD
 EGMC
         </textarea>
-
         <button>Show NOTAMs</button>
     </div>
 
@@ -144,8 +153,10 @@ EGMC
                 }
 //                console.log(mapNotams);
                 renderMarkers();
+                $button.prop('disabled', false);
             };
             var onGetNotams = function(){
+                $button.prop('disabled', true);
                 $.post(
                     '/',
                     {
@@ -159,6 +170,10 @@ EGMC
             
             $button.click(onGetNotams);
             initMap();
+
+            setTimeout(function(){
+                $button.click();
+            }, 5000);
         });
 
 
