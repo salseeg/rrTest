@@ -43,17 +43,6 @@ class GeoSpot
         }
     }
 
-    protected static function splitByLength($str, array $length){
-        $result = [];
-        foreach ($length as $len){
-            $result[] = substr($str, 0, $len);
-            $str = substr($str, $len);
-        }
-        if ($str){
-            $result[] = $str;
-        }
-        return $result;
-    }
 
     protected static function geoToNumeric($direction, $degree, $minutes = 0, $seconds = 0){
         $number = intval($degree);
