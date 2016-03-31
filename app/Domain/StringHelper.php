@@ -21,9 +21,12 @@ class StringHelper
      */
     static function splitByLength($str, array $length){
         $result = [];
-        $length = array_filter($length, function($x){return $x >= 0 and is_int($x) ;});
+//        $length = array_filter($length, function($x){return $x >= 0 and is_int($x) ;});
        
         foreach ($length as $len){
+            if (!is_int($len) or $len < 0) {
+                continue;
+            }
             $result[] = substr($str, 0, $len) ?: '';
             $str = substr($str, $len);
         }
@@ -34,20 +37,27 @@ class StringHelper
        
         return $result;
     }
+
+    static function isPositive($x){
+        return is_int($x) and $x >= 0;
+    }
     
     static function splitMultiple($str, array $length){
         $result = [];
-        $length = array_filter($length, function($x){return $x >= 0 and is_int($x) ;});
         $strLen = strlen($str);
         $pos = 0;
 
         foreach ($length as $len){
-            $result[] = substr($str, $pos, $len) ?: '';
-//            $str = substr($str, $len);
-            $pos += $len;
+            if ($len >= 0 and is_int($len)){
+                $result[] = substr($str, $pos, $len) ?: '';
+                $pos += $len;
+            }
         }
 
-        if ($tailLength = $strLen  - $pos and $tailLength > 0){
+        if (
+            $tailLength = $strLen  - $pos 
+            and $tailLength > 0
+        ){
             $result[] = substr($str, $pos, $tailLength);
         }
 
