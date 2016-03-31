@@ -52,7 +52,7 @@ class StringHelperTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testBench(){
-        for ($i = 10000; $i > 0 ; $i -= 1){
+        for ($i = 100; $i > 0 ; $i -= 1){
             self::$cases[] = $this->generateCase();
         }
 
@@ -61,7 +61,6 @@ class StringHelperTest extends \PHPUnit_Framework_TestCase
         while ($i){
             foreach (self::$cases as $c){
                 $res = StringHelper::splitByLength($c['str'], $c['lens']);
-//                $this->assertEquals(serialize($c['out']), serialize($res));
             }
             $i -= 1;
         }
@@ -73,7 +72,6 @@ class StringHelperTest extends \PHPUnit_Framework_TestCase
         while($i){
             foreach (self::$cases as $c){
                 $res = StringHelper::splitMultiple($c['str'], $c['lens']);
-//                $this->assertEquals(serialize($c['out']), serialize($res));
             }
             $i -= 1;
         }

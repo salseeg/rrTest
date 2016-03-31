@@ -19,29 +19,6 @@ class StringHelper
      * @param int[] $length
      * @return string[]
      */
-    static function splitByLength($str, array $length){
-        $result = [];
-//        $length = array_filter($length, function($x){return $x >= 0 and is_int($x) ;});
-       
-        foreach ($length as $len){
-            if (!is_int($len) or $len < 0) {
-                continue;
-            }
-            $result[] = substr($str, 0, $len) ?: '';
-            $str = substr($str, $len);
-        }
-       
-        if ($str){
-            $result[] = $str;
-        }
-       
-        return $result;
-    }
-
-    static function isPositive($x){
-        return is_int($x) and $x >= 0;
-    }
-    
     static function splitMultiple($str, array $length){
         $result = [];
         $strLen = strlen($str);
@@ -62,6 +39,16 @@ class StringHelper
         }
 
         return $result;
+    }
+
+    /**
+     * @param $str
+     * @param array $length
+     * @return \string[]
+     * @deprecated 
+     */
+    static function splitByLength($str, array $length){
+        return self::splitMultiple($str, $length);
     }
 
 }
