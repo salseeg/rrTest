@@ -19,9 +19,9 @@ class GeoSpotTest extends \PHPUnit_Framework_TestCase
 
         $this->assertAttributeEquals('5129N00028W005', 'rawString', $spot);
 
-        $this->assertEquals(5 * 1855.3248, $spot->radius);
-        $this->assertEquals(51 + 29/60.0, $spot->latitude);
-        $this->assertEquals(-28/60.0, $spot->longitude);
+        $this->assertEquals(5 * GeoSpot::NM_TO_METER, $spot->radius);
+        $this->assertEquals(round(51 + 29/60.0, 4), round($spot->latitude, 4));
+        $this->assertEquals(round(-28/60.0, 4), round($spot->longitude, 4));
 
     }
 
@@ -31,8 +31,8 @@ class GeoSpotTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals('5129N00028W', 'rawString', $spot);
 
 //        $this->assertEquals(5 * 1855.3248, $spot->radius);
-        $this->assertEquals(51 + 29/60.0, $spot->latitude);
-        $this->assertEquals(-28/60.0, $spot->longitude);
+        $this->assertEquals(round(51 + 29/60.0,4), round($spot->latitude, 4));
+        $this->assertEquals(round(-28/60.0, 4), round($spot->longitude, 4));
 
     }
 

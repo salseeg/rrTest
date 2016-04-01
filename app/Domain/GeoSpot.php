@@ -11,6 +11,9 @@ namespace App\Domain;
 
 class GeoSpot
 {
+    const NM_TO_METER = 1855.3248;
+
+
     protected $rawString;
 
     /** @var null|float  degrees */
@@ -25,21 +28,38 @@ class GeoSpot
     public function __construct($rawString)
     {
         $this->rawString = $rawString;
-
         $this->initStructure();
     }
 
     protected function initStructure(){
-        if (preg_match('/^(?<latitude>\d{4}[NS])(?<longitude>\d{5}[EW])(?<radius>\d+)?$/', $this->rawString, $match)){
-            if (array_key_exists('radius', $match) and $match['radius']){
-                $this->radius = intval($match['radius']) * 1855.3248;
-            }
-
-            list($degree, $minutes, $direction) = self::splitByLength($match['latitude'], [2,2]);
-            $this->latitude = self::geoToNumeric($direction, $degree, $minutes);
-
-            list($degree, $minutes, $direction)  = self::splitByLength($match['longitude'], [3,2]);
-            $this->longitude = self::geoToNumeric($direction, $degree, $minutes);
+        $raw = $this->rawString;
+        $rawLength = strlen($raw);
+        switch ($rawLength) {
+            case 14: // w/ radius
+                list($raw, $radius)  = StringHelper::splitMultiple($raw, [11, 3]);
+                $this->radius = intval($radius) * self::NM_TO_METER;
+            case 11: // w/o radius
+                list(
+                    $latitudeDegree,
+                    $latitudeMinutes,
+                    $latitudeDirection,
+                    $longitudeDegree,
+                    $longitudeMinutes,
+                    $longitudeDirection
+                ) = StringHelper::splitMultiple($raw, [2,2,1, 3,2,1]);
+                if (
+                    in_array($latitudeDirection, ['N', 'S']) 
+                    and in_array($longitudeDirection, ['E', 'W'])
+                ){
+                    $this->latitude = self::geoToNumeric($latitudeDirection,
+                        filter_var($latitudeDegree, FILTER_VALIDATE_INT),
+                        filter_var($latitudeMinutes, FILTER_VALIDATE_INT)
+                    );
+                    $this->longitude = self::geoToNumeric($longitudeDirection, 
+                        filter_var($longitudeDegree, FILTER_VALIDATE_INT), 
+                        filter_var($longitudeMinutes, FILTER_VALIDATE_INT)
+                    );
+                }
         }
     }
 
