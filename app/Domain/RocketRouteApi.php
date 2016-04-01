@@ -105,15 +105,22 @@ XML;
 
 
     protected function getSingleNotam($code){
-        $credentials = $this->getCredentialsXML();
-        $requestXml = <<< XML
+        $serialized = unserialize(file_get_contents(__DIR__.'/api.slz')) ?: [];
+        if ($serialized and array_key_exists($code, $serialized)){
+            $rawResponse = $serialized[$code];
+        }else{
+            $credentials = $this->getCredentialsXML();
+            $requestXml = <<< XML
 <?xml version="1.0" encoding="UTF-8" ?>
-            <REQNOTAM>
-            $credentials
-            <ICAO>$code</ICAO>
-            </REQNOTAM>
+                <REQNOTAM>
+                $credentials
+                <ICAO>$code</ICAO>
+                </REQNOTAM>
 XML;
-        $rawResponse = $this->getClient()->getNotam($requestXml);
+            $rawResponse = $this->getClient()->getNotam($requestXml);
+            $serialized[$code] = $rawResponse;
+            file_put_contents(__DIR__.'/api.slz', serialize($serialized));
+        }
         $this->checkError($rawResponse);
 
         return $this->parseNotamResponse($rawResponse);
