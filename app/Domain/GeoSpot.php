@@ -16,11 +16,11 @@ class GeoSpot
 
     protected $rawString;
 
-    /** @var null|float  degrees */
-    public $latitude = null;
+    /** @var GeoLatitude  degrees */
+    public $latitude;
     
-    /** @var null|float degrees  */
-    public $longitude = null;
+    /** @var GeoLongitude degrees  */
+    public $longitude;
     
     /** @var null|float meters  */
     public $radius = null;
@@ -39,46 +39,10 @@ class GeoSpot
                 list($raw, $radius)  = StringHelper::splitMultiple($raw, [11, 3]);
                 $this->radius = intval($radius) * self::NM_TO_METER;
             case 11: // w/o radius
-                list(
-                    $latitudeDegree,
-                    $latitudeMinutes,
-                    $latitudeDirection,
-                    $longitudeDegree,
-                    $longitudeMinutes,
-                    $longitudeDirection
-                ) = StringHelper::splitMultiple($raw, [2,2,1, 3,2,1]);
-                if (
-                    in_array($latitudeDirection, ['N', 'S']) 
-                    and in_array($longitudeDirection, ['E', 'W'])
-                ){
-                    $this->latitude = self::geoToNumeric($latitudeDirection,
-                        filter_var($latitudeDegree, FILTER_VALIDATE_INT),
-                        filter_var($latitudeMinutes, FILTER_VALIDATE_INT)
-                    );
-                    $this->longitude = self::geoToNumeric($longitudeDirection, 
-                        filter_var($longitudeDegree, FILTER_VALIDATE_INT), 
-                        filter_var($longitudeMinutes, FILTER_VALIDATE_INT)
-                    );
-                }
+                list( $latitude, $longitude) = StringHelper::splitMultiple($raw, [5, 6]);
+                $this->latitude = GeoLatitude::fromNotamString($latitude);
+                $this->longitude = GeoLongitude::fromNotamString($longitude);
         }
-    }
-
-
-    protected static function geoToNumeric($direction, $degree, $minutes = 0, $seconds = 0){
-        $number = intval($degree);
-        $minutes = intval($minutes);
-        $seconds = intval($seconds);
-
-        if ($minutes){
-            $number += $minutes / 60.0;
-        }
-        if ($seconds){
-            $number += $seconds / 3600.0;
-        }
-        if (in_array($direction, ['W', 'S'])){
-            $number *= -1;
-        }
-        return $number;
     }
 
     function __toString()
