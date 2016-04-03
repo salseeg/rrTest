@@ -109,10 +109,6 @@ XML;
      * @throws RocketRouteException
      */
     protected function getSingleNotam($code){
-        $serialized = unserialize(file_get_contents(__DIR__.'/api.slz')) ?: [];
-        if ($serialized and array_key_exists($code, $serialized)){
-            $rawResponse = $serialized[$code];
-        }else{
             $credentials = $this->getCredentialsXML();
             $requestXml = <<< XML
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -122,9 +118,6 @@ XML;
                 </REQNOTAM>
 XML;
             $rawResponse = $this->getClient()->getNotam($requestXml);
-            $serialized[$code] = $rawResponse;
-            file_put_contents(__DIR__.'/api.slz', serialize($serialized));
-        }
         $this->checkError($rawResponse);
 
         return $this->parseNotamResponse($rawResponse);
@@ -143,26 +136,6 @@ XML;
             $result->absorb($this->getSingleNotam((string) $code));
         }
         return $result;
-
-        /*
-        $credentials = $this->getCredentialsXML();
-        $codesXML = implode(
-            "\n",
-            array_map(function($code){
-                return '<ICAO>'.$code.'</ICAO>';
-            }, $codes)
-        );
-        $requestXml = <<< XML
-<?xml version="1.0" encoding="UTF-8" ?>
-            <REQNOTAM>
-            $credentials
-            $codesXML
-            </REQNOTAM>
-XML;
-        $rawResponse = $this->getClient()->getNotam($requestXml);
-        $this->checkError($rawResponse);
-
-        return $this->parseNotamResponse($rawResponse);*/
     }
 
 

@@ -3,10 +3,14 @@
  */
 $(function(){
     var $map = $('#mapPane');
-    var $button = $('#panel button');
+    var $error = $('div.error');
+    var $button = $('#panel').find('button');
+    var $textarea = $('#panel').find('textarea');
     var gMap = null;
     var overlays = [];
     var mapNotams = {};
+    var _wrongIcaoTpl = _.template('Wrong ICAO code : <b><%= code %></b>');
+    var _serverErrorTpl = _.template('<b><%= error %></b>');
 
     var initMap = function(){
         var mapProp = {
@@ -39,7 +43,6 @@ $(function(){
         var makeMarker = function(point){
             return new google.maps.Marker({
                 position: point,
-//                        icon:'exclamation-icon.png'
                 icon: icon,
                 shape: shape
             });
@@ -58,7 +61,7 @@ $(function(){
         var makeInfo = function(point, content){
             return new google.maps.InfoWindow({
                 content: content,
-                position: point     // for correct placement on circle
+                position: point     // for correct placement
             });
         };
 
@@ -80,11 +83,18 @@ $(function(){
         gMap.fitBounds(bounding);
     };
 
+    var showError = function(error){
+        $error.html(error).show();
+        window.scrollTo(0,0);
+    };
+    var clearError = function(){
+        $error.hide().html('');
+    };
+
     var onNotamsRecieved = function(x){
-//                console.log(x);
         clearOverlays();
+        clearError();
         if (! x.error){
-//                    mapNotams = {};
             _.each(x.notams, function(list){
                 _.each(list, function(notam){
                     var coordinates = notam.coords;
@@ -93,28 +103,47 @@ $(function(){
                             spot: notam.spot,
                             messages: [notam.message]
                         };
-//                                console.log(mapNotams);
                     }else{
                         mapNotams[coordinates].messages.push(notam.message);
                     }
                 });
             });
+            renderMarkers();
+        }else{
+            // show error
+            showError(_serverErrorTpl({error: x.error}));
         }
-//                console.log(mapNotams);
-        renderMarkers();
         $button.prop('disabled', false);
     };
+    var findMistake = function(codes){
+        var re = /^[A-Z]{4}$/;
+        codes = $.trim(codes).split("\n");
+        var mistake = _.find(codes, function(c){
+            c = $.trim(c);
+            return !re.test(c) ;
+        });
+
+        return mistake ? _wrongIcaoTpl({ code: mistake}) : false;
+    };
     var onGetNotams = function(){
+        clearError();
         $button.prop('disabled', true);
-        $.post(
-            '/',
-            {
-                codes: $('#panel textarea').val()
-            },
-            onNotamsRecieved,
-            'json'
-        );
-        clearOverlays();
+        var codes = $textarea.val();
+        var error = findMistake(codes);
+        if (error){
+            showError(error);
+            $button.prop('disabled', false);
+        }else{
+            $.post(
+                '/',
+                {
+                    codes: codes
+                },
+                onNotamsRecieved,
+                'json'
+            );
+            clearOverlays();
+        }
     };
 
     $button.click(onGetNotams);

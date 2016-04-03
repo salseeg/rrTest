@@ -25,12 +25,6 @@ class StringHelperTest extends \PHPUnit_Framework_TestCase
 //        [ 'str' => '', 'lens' => [], 'out' => [] ],
     ];
 
-    public function testSplitByLength(){
-        foreach (self::$cases as $case){
-            $res = StringHelper::splitByLength($case['str'], $case['lens']);
-            $this->assertEquals(serialize($case['out']), serialize($res));
-        }
-    }
 
     public function testSplitMultiple(){
         foreach (self::$cases as $case){
@@ -51,7 +45,7 @@ class StringHelperTest extends \PHPUnit_Framework_TestCase
         return ['str' => implode('', $chunks), 'lens' => $lens, 'out' => $chunks];
     }
 
-    public function testBench(){
+    public function oldtestBench(){
         for ($i = 100; $i > 0 ; $i -= 1){
             self::$cases[] = $this->generateCase();
         }
@@ -60,7 +54,7 @@ class StringHelperTest extends \PHPUnit_Framework_TestCase
         $time = microtime(true);
         while ($i){
             foreach (self::$cases as $c){
-                $res = StringHelper::splitByLength($c['str'], $c['lens']);
+                StringHelper::splitByLength($c['str'], $c['lens']);
             }
             $i -= 1;
         }
@@ -71,7 +65,7 @@ class StringHelperTest extends \PHPUnit_Framework_TestCase
         $time = microtime(true);
         while($i){
             foreach (self::$cases as $c){
-                $res = StringHelper::splitMultiple($c['str'], $c['lens']);
+                StringHelper::splitMultiple($c['str'], $c['lens']);
             }
             $i -= 1;
         }

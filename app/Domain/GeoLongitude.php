@@ -53,8 +53,8 @@ class GeoLongitude
     
     public static function fromNotamString($str){
         list($degrees, $minutes, $direction) = StringHelper::splitMultiple($str, [3, 2, 1]);
-        $degrees = filter_var($degrees, FILTER_VALIDATE_INT);
-        $minutes = filter_var($minutes, FILTER_VALIDATE_INT);
+        $degrees = intval($degrees);
+        $minutes = intval($minutes);
         $minutes = min($minutes , 59);
         $degrees += $minutes / 60.0;
         $degrees = min($degrees, 180);

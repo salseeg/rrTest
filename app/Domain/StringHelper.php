@@ -41,14 +41,4 @@ class StringHelper
         return $result;
     }
 
-    /**
-     * @param $str
-     * @param array $length
-     * @return \string[]
-     * @deprecated 
-     */
-    static function splitByLength($str, array $length){
-        return self::splitMultiple($str, $length);
-    }
-
 }

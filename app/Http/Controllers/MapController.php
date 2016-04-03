@@ -10,8 +10,6 @@ namespace App\Http\Controllers;
 
 
 use App\Domain\IcaoCollection;
-use App\Domain\IcaoNotamCollection;
-use App\Domain\Notam;
 use App\Domain\RocketRouteApi;
 use App\Domain\RocketRouteException;
 use Illuminate\Http\Request;

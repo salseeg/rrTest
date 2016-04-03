@@ -42,6 +42,7 @@ class GeoSpotTest extends \PHPUnit_Framework_TestCase
             '0060N00059E' => [59/60.0, 59/60.0 , false],
             '8000S15030E' => [-80, 150.5, true],
             '8000S15030E040' => [-80, 150.5, true],
+            '0500S03030E040' => [-5, 30.5, true],
 //            '' => [],
         ];
 

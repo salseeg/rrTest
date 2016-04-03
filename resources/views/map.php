@@ -30,6 +30,17 @@
             margin: 1em;
         }
 
+        div.error{
+            margin: 1em;
+            border: 0.13em solid red;
+            background-color: #fdd;
+            color: #a00;
+            padding: 1ex;
+            text-align: center;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 1em;
+        }
+
         @media (max-width: 1024px) {
             #mapPane {
                 width: 100%;
@@ -42,6 +53,7 @@
     </style>
 </head>
 <body>
+    <div class="error" style="display: none;">test</div>
     <div id="mapPane"></div>
     <div id="panel">
         <textarea

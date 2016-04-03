@@ -9,6 +9,7 @@
 namespace tests\Domain;
 
 
+use App\Domain\IcaoCollection;
 use App\Domain\RocketRouteApi;
 use App\Domain\RocketRouteException;
 
@@ -18,9 +19,11 @@ class RocketRouteApiTest extends \PHPUnit_Framework_TestCase
     function testCreation(){
         $caughtException = false;
         $api = new RocketRouteApi();
+        $icao = new IcaoCollection();
+        $icao->addStrings('EGHH');
 
         try{
-            $response  = $api->getNotam('EGHH');
+            $response  = $api->getNotam($icao);
         }catch (RocketRouteException $e){
             $caughtException = true;
         }
@@ -32,10 +35,13 @@ class RocketRouteApiTest extends \PHPUnit_Framework_TestCase
 
         $api = new RocketRouteApi();
         $api->setPassword('pp');
+        $icao = new IcaoCollection();
+        $icao->addStrings('EGHH');
+
 
         try{
 
-            $response  = $api->getNotam('EGHH');
+            $response  = $api->getNotam($icao);
 
         }catch (RocketRouteException $e){
             $this->assertEquals(8, $e->getCode());
@@ -47,7 +53,10 @@ class RocketRouteApiTest extends \PHPUnit_Framework_TestCase
 
     function testManyCodes(){
         $api = new RocketRouteApi();
-        $response = $api->getNotam(['EGKA' , 'EGHH']);
+        $icao = new IcaoCollection();
+        $icao->addStrings(['EGKA' , 'EGHH']);
+
+        $response = $api->getNotam($icao)->asArray();
         
         $this->assertEquals(2, count($response));
     }

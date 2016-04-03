@@ -8,7 +8,6 @@
 
 namespace App\Domain;
 
-use App\Domain\Notam;
 
 class IcaoNotamCollection implements \IteratorAggregate
 {
