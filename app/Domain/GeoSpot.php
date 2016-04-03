@@ -11,8 +11,6 @@ namespace App\Domain;
 
 class GeoSpot
 {
-    const NM_TO_METER = 1855.3248;
-
 
     protected $rawString;
 
@@ -22,12 +20,16 @@ class GeoSpot
     /** @var GeoLongitude degrees  */
     public $longitude;
     
-    /** @var null|float meters  */
-    public $radius = null;
+    /** @var GeoRadius meters  */
+    public $radius;
 
     public function __construct($rawString)
     {
         $this->rawString = $rawString;
+        $this->radius = GeoRadius::fromNotamString('000');
+        $this->latitude = GeoLatitude::fromNumericValue(0);
+        $this->longitude = GeoLongitude::fromNumericValue(0);
+        
         $this->initStructure();
     }
 
@@ -37,18 +39,38 @@ class GeoSpot
         switch ($rawLength) {
             case 14: // w/ radius
                 list($raw, $radius)  = StringHelper::splitMultiple($raw, [11, 3]);
-                $this->radius = intval($radius) * self::NM_TO_METER;
+                $this->radius = GeoRadius::fromNotamString($radius);
             case 11: // w/o radius
                 list( $latitude, $longitude) = StringHelper::splitMultiple($raw, [5, 6]);
                 $this->latitude = GeoLatitude::fromNotamString($latitude);
                 $this->longitude = GeoLongitude::fromNotamString($longitude);
         }
     }
+    
+    function getNotamString(){
+        return
+            $this->latitude->getNotamString()
+            . $this->longitude->getNotamString()
+            . $this->radius->getNotamString()
+        ;
+    }
 
-    function __toString()
+    public function __toString()
     {
         return $this->rawString;
     }
 
-
+    /**
+     * for json output
+     * @return array
+     */
+    public function asArray(){
+        return [
+            'latitude' => floatval((string) $this->latitude),
+            'longitude' => floatval((string) $this->longitude),
+            'radius' => intval((string) $this->radius),
+        ];
+    }
+    
+    
 }

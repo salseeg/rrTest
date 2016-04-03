@@ -88,4 +88,11 @@ class GeoLatitude
     public static function fromNumericValue($value){
         return new self($value);
     }
+
+    function __toString()
+    {
+        return (string) round($this->latitude, 6, PHP_ROUND_HALF_DOWN);
+    }
+
+
 }

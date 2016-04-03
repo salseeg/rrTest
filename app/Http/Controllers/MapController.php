@@ -9,6 +9,8 @@
 namespace App\Http\Controllers;
 
 
+use App\Domain\IcaoCollection;
+use App\Domain\IcaoNotamCollection;
 use App\Domain\Notam;
 use App\Domain\RocketRouteApi;
 use App\Domain\RocketRouteException;
@@ -23,35 +25,30 @@ class MapController extends Controller
     
     function getNotams(Request $request){
         $error = '';
-        $notams = [];
-        $codes = trim($request->input('codes'));
-        $codes = explode("\n", $codes);
-        $codes = array_map('trim', $codes);
-        if (! empty($codes)){
-            $api = new RocketRouteApi();
-            try {
-                /** @var Notam[][] $notams */
-                $notams = $api->getNotam($codes);
-                foreach ($notams  as  $icao => & $list){
-                    foreach ($list as & $notam){
-                        $spot = $notam->getGeoSpot();
-                        $message = $notam->getMessage();
-                        $notam = [
-                            'id' => $notam->id,
-                            'coords' => (string) $spot,
-                            'geoSpot' => $spot,
-                            'message' => $message,
-                        ];
-                    }
+        $notamArray = [];
+        $codes = new IcaoCollection();
+        try {
+            $codes->addStrings(explode("\n", trim($request->input('codes'))));
+        }catch (\UnexpectedValueException $e){
+            $error = $e->getMessage();
+        }
+        if (!$error){
+            if (! $codes->isEmpty()){
+                $api = new RocketRouteApi();
+                try {
+                    $notamArray = $api->getNotam($codes)->asArray();
+                }catch (RocketRouteException $e){
+                    $error = $e->getMessage();
                 }
-            }catch (RocketRouteException $e){
-                $error = $e->getMessage();
+            }else{
+                $error = 'No valid ICAO codes specified';
             }
+            
         }
 
         return response()->json([
             'error' => $error,
-            'notams' => $notams,
+            'notams' => $notamArray,
         ]);
     }
 

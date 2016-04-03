@@ -103,7 +103,11 @@ XML;
         $this->password = $password;
     }
 
-
+    /**
+     * @param $code
+     * @return IcaoNotamCollection
+     * @throws RocketRouteException
+     */
     protected function getSingleNotam($code){
         $serialized = unserialize(file_get_contents(__DIR__.'/api.slz')) ?: [];
         if ($serialized and array_key_exists($code, $serialized)){
@@ -128,18 +132,15 @@ XML;
 
     /**
      * @param $codes
-     * @return Notam[][]
+     * @return IcaoNotamCollection
      * @throws RocketRouteException
      */
-    public function getNotam($codes){
-        if (! is_array($codes)){
-            $codes = [$codes];
-        }
+    public function getNotam(IcaoCollection $codes){
 
         // workaround over bulk bug
-        $result = [];
-        foreach ($codes as$code){
-            $result = array_merge($result, $this->getSingleNotam($code));
+        $result = new IcaoNotamCollection();
+        foreach ($codes as $code){
+            $result->absorb($this->getSingleNotam((string) $code));
         }
         return $result;
 
@@ -163,10 +164,14 @@ XML;
 
         return $this->parseNotamResponse($rawResponse);*/
     }
-    
-    
+
+
+    /**
+     * @param $rawRequest
+     * @return IcaoNotamCollection
+     */
     protected function parseNotamResponse($rawRequest){
-        $response = [];
+        $response = new IcaoNotamCollection();
         $xml = simplexml_load_string($rawRequest);
 
         if ($xml->NOTAMSET){
@@ -174,7 +179,7 @@ XML;
 //            print_r($icao);
 
             foreach ($xml->NOTAMSET->NOTAM as $notam){
-                $response[$icao][] = new Notam($notam);
+                $response ->addNotam($icao, new Notam($notam));
             }
         }
         

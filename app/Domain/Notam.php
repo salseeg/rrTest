@@ -43,4 +43,14 @@ class Notam
     public function getMessage(){
         return $this->itemE;
     }
+
+    public function asArray(){
+        $spot = $this->getGeoSpot();
+        return [
+            'id' => $this->id,
+            'spot' => $spot ? $spot->asArray() : [],
+            'message' => $this->getMessage(),
+            'coords' => $spot? $spot->getNotamString() : '',
+        ];
+    }
 }

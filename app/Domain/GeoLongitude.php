@@ -79,5 +79,9 @@ class GeoLongitude
         ;
     }
     
+    function __toString()
+    {
+        return (string) round($this->longitude, 6, PHP_ROUND_HALF_DOWN);
+    }
     
 }
