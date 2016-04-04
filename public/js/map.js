@@ -21,10 +21,11 @@ $(function(){
         gMap  = new google.maps.Map($map.get(0),mapProp);
     };
     var clearOverlays = function(){
-        mapNotams = {};
+        console.log('should clear');
         while(overlays[0]) {
             overlays.pop().setMap(null);
         }
+        mapNotams = {};
     };
 
     var renderMarkers = function(){
@@ -75,6 +76,7 @@ $(function(){
             var content = place.messages.join('<hr>');
 
             marker.setMap(gMap);
+            overlays.push(marker);
 
             google.maps.event.addListener(marker, 'click', function() {
                 makeInfo(point, content).open(gMap);
